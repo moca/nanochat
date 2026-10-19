@@ -6,13 +6,15 @@ https://github.com/openai/human-eval/blob/master/human_eval/execution.py
 The code runs in a fresh Python subprocess. What is covered:
 - Each execution runs in its own process (killed hard by the parent on timeout)
 - A fresh interpreter: no access to the parent process memory, and a scrubbed environment
-- Memory limits are enforced via rlimits (256MB by default)
+- Memory limits are enforced via rlimits (256MB by default) on supported platforms
 - stdout and stderr are captured, stdin is disabled
 - Code runs in a temporary directory that is deleted afterwards
 - Destructive functions are disabled (examples: os.system, os.kill, shutil.rmtree, subprocess.Popen)
 
 What is not covered:
 - Not a true security sandbox
+- Memory limits are not enforced on macOS because this implementation disables
+  the unsupported rlimit calls there
 - Network access is not blocked (e.g. sockets could be opened)
 - Python's dynamic features (e.g. ctypes) could bypass restrictions
 - No kernel-level isolation (no seccomp, no containers, no virtualization)
@@ -82,7 +84,8 @@ def execute_code(
     Args:
         code: Python code to execute as a string
         timeout: Maximum execution time in seconds (default: 5.0)
-        maximum_memory_bytes: Memory limit in bytes (default: 256MB, None to disable)
+        maximum_memory_bytes: Memory limit in bytes (default: 256MB, None to
+            disable). This limit is not enforced on macOS.
 
     Returns:
         ExecutionResult with success status, stdout/stderr, and error information
