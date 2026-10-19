@@ -1,0 +1,16 @@
+.git
+.github
+.claude
+.venv
+.pytest_cache
+**/__pycache__
+**/*.py[cod]
+.DS_Store
+.env
+wandb
+report.md
+eval_bundle
+dev-ignore
+CLAUDE.md
+dev
+tests
